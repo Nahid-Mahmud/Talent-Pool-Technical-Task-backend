@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import expressSession from 'express-session';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { router } from './routes';
 import notFound from './middlewares/notFound';
 import globalErrorHandler from './middlewares/globalErrorHandler';
@@ -15,6 +16,9 @@ import envVariables from './config/env';
 
 export const app: Application = express();
 app.use(cookieParser());
+
+// Set security HTTP headers
+app.use(helmet());
 
 const corsOptions: CorsOptions = {
   origin:
