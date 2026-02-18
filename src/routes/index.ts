@@ -11,14 +11,8 @@ interface IModuleRoute {
 }
 
 const moduleRoutes: IModuleRoute[] = [
-  {
-    path: '/auth',
-    route: authRoutes,
-  },
-  {
-    path: '/users',
-    route: userRoutes,
-  },
+  { path: '/auth', route: authRoutes },
+  { path: '/users', route: userRoutes },
 ];
 
 moduleRoutes.forEach((route) => {

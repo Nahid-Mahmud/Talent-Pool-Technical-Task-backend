@@ -80,7 +80,7 @@ const generateAccessTokenFromRefreshToken = catchAsync(async (req, res) => {
   });
 });
 
-const logout = catchAsync(async (req, res) => {
+const logout = catchAsync(async (_req, res) => {
   res.clearCookie('accessToken', {
     httpOnly: true,
     secure: true,

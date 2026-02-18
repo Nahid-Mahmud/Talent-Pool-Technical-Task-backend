@@ -7,6 +7,7 @@ import cors, { type CorsOptions } from 'cors';
 import cookieParser from 'cookie-parser';
 import expressSession from 'express-session';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import { router } from './routes';
 import notFound from './middlewares/notFound';
 import globalErrorHandler from './middlewares/globalErrorHandler';
@@ -22,8 +23,8 @@ const corsOptions: CorsOptions = {
       : envVariables.FRONTEND_URL,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true, // This is crucial for cookies
-  optionsSuccessStatus: 200, // For legacy browser support
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -40,16 +41,46 @@ app.use(
 app.use(morgan('dev'));
 app.set('trust proxy', 1);
 
+// ─── Rate Limiting ────────────────────────────────────────────────────────────
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests, please try again later.',
+  },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many auth attempts, please try again later.',
+  },
+});
+
+app.use(globalLimiter);
+app.use('/api/v1/auth', authLimiter);
+
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
 app.get('/', (req: Request, res: Response) => {
   res.json({
-    message: 'API is running...',
+    message: 'TalentPull API is running...',
     status: 'success',
+    version: 'v1',
   });
 });
 
 app.get('/api/v1', (req: Request, res: Response) => {
   res.json({
-    message: 'You have reached the API v1 endpoint',
+    message: 'You have reached the TalentPull API v1 endpoint',
     status: 'success',
   });
 });
