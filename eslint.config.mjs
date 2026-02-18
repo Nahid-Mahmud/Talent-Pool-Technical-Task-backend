@@ -12,5 +12,8 @@ export default defineConfig(
     rules: {
       'no-console': 'warn',
     },
+  },
+  {
+    ignores: ['dist/**', 'node_modules/**', '.husky/**'], 
   }
 );
