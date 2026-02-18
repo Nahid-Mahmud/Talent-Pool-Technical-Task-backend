@@ -23,12 +23,12 @@
     "prisma:db-reset-test": "NODE_ENV=test prisma migrate reset --force",
     "prepare": "husky install"
   },
-"lint-staged": {
-  "src/**/*.{js,ts,tsx}": [
-    "eslint --fix",
-    "prettier --write"
-  ]
-},
+  "lint-staged": {
+    "src/**/*.{js,ts,tsx}": [
+      "npx eslint ./src",
+      "prettier --write"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
