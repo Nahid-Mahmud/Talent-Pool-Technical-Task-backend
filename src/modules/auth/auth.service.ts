@@ -4,9 +4,10 @@ import { StatusCodes } from 'http-status-codes';
 import envVariables from '../../config/env';
 import { prisma } from '../../config/prisma';
 import AppError from '../../errors/AppError';
-import { verifyJwtToken } from '../../utils/jwt';
+import { generateJwtToken, verifyJwtToken } from '../../utils/jwt';
 import { createNewRefreshToken } from '../../utils/userTokens';
 import { hashPassword } from '../../utils/hashPassword';
+import { sendEmail } from '../../utils/sendEmail';
 
 const register = async (email: string, password: string, name?: string) => {
   if (!email || !password) {
@@ -87,8 +88,11 @@ const forgetPassword = async (email: string) => {
     where: { email: email.toLowerCase() },
   });
 
+  // Always return generic message, do not leak user existence
   if (!user) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+    return {
+      message: 'If your email exists, a password reset link has been sent.',
+    };
   }
 
   const jwtSecret = envVariables.JWT.FORGET_PASSWORD_TOKEN_JWT_SECRET;
@@ -100,15 +104,29 @@ const forgetPassword = async (email: string) => {
     );
   }
 
-  // const resetToken = generateJwtToken(
-  //   { email: user.email, id: user.id },
-  //   jwtSecret,
-  //   expiresIn
-  // );
+  const resetToken = generateJwtToken(
+    { email: user.email, id: user.id },
+    jwtSecret,
+    expiresIn
+  );
 
-  // const resetLink = `${envVariables.FRONTEND_URL}/reset-password?token=${resetToken}`;
+  // Build reset link
+  const resetLink = `${envVariables.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
-  return { message: 'Password reset link sent to your email' };
+  // Send email
+  await sendEmail({
+    subject: 'Password Reset Request',
+    to: user.email,
+    templateName: 'forgotPassword.ejs',
+    templateData: {
+      userName: user.name || user.email,
+      resetUrl: resetLink,
+    },
+  });
+
+  return {
+    message: 'If your email exists, a password reset link has been sent.',
+  };
 };
 
 const resetPassword = async (token: string, newPassword: string) => {
