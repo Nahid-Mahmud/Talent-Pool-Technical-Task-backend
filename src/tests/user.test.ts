@@ -25,9 +25,7 @@ describe('User Routes', () => {
   type PrismaUser = Awaited<ReturnType<typeof prisma.user.create>>;
   let superAdmin: PrismaUser;
   let admin: PrismaUser;
-
   let student: PrismaUser;
-
   let superAdminCookie: string;
   let adminCookie: string;
   let studentCookie: string;
