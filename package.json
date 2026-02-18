@@ -6,7 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
     "dev": "tsx watch src/server.ts",
-    "build": "npx eslint ./src && tsc && cp -r ./src/app/utils/templates ./dist/app/utils/",
+    "build": "npx eslint ./src && tsc && cp -r ./src/utils/templates ./dist/utils",
     "start": "node ./dist/server.js",
     "postinstall": "prisma generate",
     "lint": "npx eslint ./src",
