@@ -8,8 +8,10 @@ datasource db {
 }
 
 enum UserRole {
-  user
+  super_admin
   admin
+  instructor
+  student
 }
 
 enum UserStatus {
@@ -18,11 +20,162 @@ enum UserStatus {
   suspended
 }
 
+enum CourseStatus {
+  draft
+  published
+  archived
+}
+
+enum LessonType {
+  video
+  text
+}
+
+enum EnrollmentStatus {
+  active
+  completed
+  dropped
+}
+
+enum PaymentStatus {
+  succeeded
+  pending
+  failed
+  cancelled
+}
+
 model User {
-  id       String     @id @default(uuid()) @db.Uuid
-  email    String     @unique
-  password String
-  name     String?
-  role     UserRole   @default(user)
-  status   UserStatus @default(active)
+  id        String     @id @default(uuid()) @db.Uuid
+  email     String     @unique
+  password  String
+  name      String?
+  role      UserRole   @default(student)
+  status    UserStatus @default(active)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  courses     Course[]     @relation("InstructorCourses")
+  enrollments Enrollment[]
+
+  payments Payment[]
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses Course[]
+}
+
+model Course {
+  id          String       @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String       @unique
+  description String?
+  thumbnail   String?
+  price       Float        @default(0)
+  isFree      Boolean      @default(true)
+  status      CourseStatus @default(draft)
+  isDeleted   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  instructor   User      @relation("InstructorCourses", fields: [instructorId], references: [id])
+  instructorId String    @db.Uuid
+  category     Category? @relation(fields: [categoryId], references: [id])
+  categoryId   String?   @db.Uuid
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  payments Payment[]
+
+  @@index([status])
+  @@index([instructorId])
+  @@index([categoryId])
+  @@index([isDeleted])
+  @@index([title])
+}
+
+model Lesson {
+  id          String     @id @default(uuid()) @db.Uuid
+  title       String
+  content     String?
+  type        LessonType @default(text)
+  videoUrl    String?
+  description String?
+  order       Int
+  isPreview   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String @db.Uuid
+
+  progress LessonProgress[]
+
+  @@index([courseId])
+  @@index([order])
+}
+
+model Enrollment {
+  id        String           @id @default(uuid()) @db.Uuid
+  status    EnrollmentStatus @default(active)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  student   User   @relation(fields: [studentId], references: [id])
+  studentId String @db.Uuid
+  course    Course @relation(fields: [courseId], references: [id])
+  courseId  String @db.Uuid
+
+  progress LessonProgress[]
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+  @@index([status])
+}
+
+model LessonProgress {
+  id          String    @id @default(uuid()) @db.Uuid
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  enrollmentId String     @db.Uuid
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId     String     @db.Uuid
+
+  @@unique([enrollmentId, lessonId])
+  @@index([enrollmentId])
+  @@index([lessonId])
+}
+
+model Payment {
+  id              String        @id @default(uuid()) @db.Uuid
+  amount          Float
+  currency        String        @default("usd")
+  status          PaymentStatus
+  stripePaymentId String        @unique
+  stripeSessionId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @db.Uuid
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String @db.Uuid
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
 }
