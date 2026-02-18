@@ -44,33 +44,36 @@ app.set('trust proxy', 1);
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
 
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
     message: 'Too many requests, please try again later.',
+    status: 429,
   },
 });
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
     message: 'Too many auth attempts, please try again later.',
+    status: 429,
   },
 });
 
 app.use(globalLimiter);
+
 app.use('/api/v1/auth', authLimiter);
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({
     message: 'TalentPull API is running...',
     status: 'success',
@@ -78,7 +81,7 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
-app.get('/api/v1', (req: Request, res: Response) => {
+app.get('/api/v1', (_req: Request, res: Response) => {
   res.json({
     message: 'You have reached the TalentPull API v1 endpoint',
     status: 'success',

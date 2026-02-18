@@ -98,6 +98,7 @@ describe('User Routes', () => {
       expect(res.body.success).toBe(true);
       expect(Array.isArray(res.body.data)).toBe(true);
     });
+
     it('should forbid students from listing users', async () => {
       await request(app)
         .get('/api/v1/users')
