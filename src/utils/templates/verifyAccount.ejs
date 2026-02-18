@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #333;
+      }
+      .content {
+        padding: 20px;
+        text-align: center;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 0 0 20px;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #007bff;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .button:hover {
+        background-color: #0056b3;
+      }
+      .link-container {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-all;
+        font-size: 14px;
+        color: #007bff;
+        margin: 20px 0;
+      }
+      .link-container a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      .link-container a:hover {
+        text-decoration: underline;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 14px;
+        color: #777;
+      }
+      .footer a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+      @media only screen and (max-width: 600px) {
+        .container {
+          width: 100%;
+          padding: 10px;
+        }
+        .button {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+        .link-container {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Welcome to SHIKHI!</h1>
+      </div>
+      <div class="content">
+        <p>Hello <%= userName %>,</p>
+        <p>
+          Thank you for signing up! To complete your registration, please verify
+          your email address by clicking the button below:
+        </p>
+        <a href="<%= verificationUrl %>" class="button">Verify Your Email</a>
+        <p>
+          If the button doesn't work, you can copy and paste the following link
+          into your browser:
+        </p>
+        <div class="link-container">
+          <a href="<%= verificationUrl %>"><%= verificationUrl %></a>
+        </div>
+      </div>
+      <div class="footer">
+        <p>
+          If you did not sign up for this account, please ignore this email.
+        </p>
+        <p>
+          &copy; <%= new Date().getFullYear() %> SHIKHI. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
