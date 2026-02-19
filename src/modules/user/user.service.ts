@@ -114,7 +114,7 @@ const deleteUser = async (targetId: string, requesterId: string) => {
   return prisma.user.delete({ where: { id: targetId } });
 };
 
-const createAdmin = async (email: string, password: string, name?: string) => {
+const createAdmin = async (email: string, password: string, name: string) => {
   const normalizedEmail = email.toLowerCase();
   const existing = await prisma.user.findUnique({
     where: { email: normalizedEmail },

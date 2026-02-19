@@ -9,7 +9,7 @@ import { createNewRefreshToken } from '../../utils/userTokens';
 import { hashPassword } from '../../utils/hashPassword';
 import { sendEmail } from '../../utils/sendEmail';
 
-const register = async (email: string, password: string, name?: string) => {
+const register = async (email: string, password: string, name: string) => {
   if (!email || !password) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
