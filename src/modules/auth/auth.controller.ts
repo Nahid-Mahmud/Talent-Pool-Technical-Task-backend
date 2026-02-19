@@ -34,7 +34,7 @@ const login = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     message: 'User logged in successfully',
-    data: { user: result, accessToken, refreshToken },
+    data: { user: result },
     statusCode: 200,
   });
 });
@@ -75,7 +75,7 @@ const generateAccessTokenFromRefreshToken = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     message: 'Access token generated successfully',
-    data: { accessToken: result.accessToken },
+    data: null,
     statusCode: 200,
   });
 });

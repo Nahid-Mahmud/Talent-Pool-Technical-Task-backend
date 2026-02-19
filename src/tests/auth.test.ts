@@ -67,8 +67,10 @@ describe('Auth Routes', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('success', true);
-      expect(response.body.data).toHaveProperty('accessToken');
-      expect(response.body.data).toHaveProperty('refreshToken');
+      // tokens are sent via cookies only
+      expect(response.body.data).not.toHaveProperty('accessToken');
+      expect(response.body.data).not.toHaveProperty('refreshToken');
+      expect(response.body.data).toHaveProperty('user');
       expect(response.headers['set-cookie']).toEqual(
         expect.arrayContaining([
           expect.stringContaining('accessToken='),
@@ -139,7 +141,8 @@ describe('Auth Routes', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('success', true);
-      expect(response.body.data).toHaveProperty('accessToken');
+      // access token is returned via cookie only
+      expect(response.body.data).toBeNull();
       expect(response.headers['set-cookie']).toEqual(
         expect.arrayContaining([expect.stringContaining('accessToken=')])
       );
