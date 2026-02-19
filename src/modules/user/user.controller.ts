@@ -71,23 +71,30 @@ const deleteUser = catchAsync(async (req, res) => {
   });
 });
 
-const createAdmin = catchAsync(async (req, res) => {
-  const { email, password, name } = req.body;
-  const result = await userService.createAdmin(email, password, name);
-  sendResponse(res, {
-    success: true,
-    message: 'Admin created',
-    data: result,
-    statusCode: 201,
-  });
-});
-
 const updateAdmin = catchAsync(async (req, res) => {
   const id = String(req.params.id);
   const result = await userService.updateAdmin(id, req.body);
   sendResponse(res, {
     success: true,
     message: 'Admin updated',
+    data: result,
+    statusCode: 200,
+  });
+});
+
+const updateUserRole = catchAsync(async (req, res) => {
+  const requesterId = req.user.id as string;
+  const requesterRole = req.user.role as UserRole;
+  const id = String(req.params.id);
+  const result = await userService.updateUserRole(
+    id,
+    req.body.role,
+    requesterId,
+    requesterRole
+  );
+  sendResponse(res, {
+    success: true,
+    message: 'User role updated',
     data: result,
     statusCode: 200,
   });
@@ -110,7 +117,7 @@ export const userController = {
   getUserById,
   updateUserStatus,
   deleteUser,
-  createAdmin,
   updateAdmin,
+  updateUserRole,
   updateUser,
 };

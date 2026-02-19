@@ -2,6 +2,7 @@ import type { Server } from 'http';
 import { app } from './app';
 import envVariables from './config/env';
 import { prisma } from './config/prisma';
+import { seedSuperAdmin } from './utils/seedSuperAdmin';
 
 let server: Server;
 
@@ -23,6 +24,9 @@ async function startServer() {
       // eslint-disable-next-line no-console
       console.log(`Server is running on port ${envVariables.PORT}`);
     });
+
+    // Seed super admin on startup
+    await seedSuperAdmin();
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);

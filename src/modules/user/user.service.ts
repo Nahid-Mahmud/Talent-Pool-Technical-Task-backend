@@ -114,21 +114,6 @@ const deleteUser = async (targetId: string, requesterId: string) => {
   return prisma.user.delete({ where: { id: targetId } });
 };
 
-const createAdmin = async (email: string, password: string, name: string) => {
-  const normalizedEmail = email.toLowerCase();
-  const existing = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
-  if (existing)
-    throw new AppError(StatusCodes.CONFLICT, 'Email already in use');
-
-  const hashed = await hashPassword(password);
-  return prisma.user.create({
-    data: { email: normalizedEmail, password: hashed, name, role: 'admin' },
-    select: userSelect,
-  });
-};
-
 const updateAdmin = async (
   adminId: string,
   data: { name?: string; email?: string; status?: UserStatus }
@@ -141,6 +126,43 @@ const updateAdmin = async (
   return prisma.user.update({
     where: { id: adminId },
     data,
+    select: userSelect,
+  });
+};
+
+const updateUserRole = async (
+  targetId: string,
+  newRole: UserRole,
+  requesterId: string,
+  requesterRole: UserRole
+) => {
+  const target = await prisma.user.findUnique({ where: { id: targetId } });
+  if (!target) throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+
+  // Prevent self role-change
+  if (targetId === requesterId) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'You cannot change your own role'
+    );
+  }
+
+  // Admins cannot promote/change super_admin accounts
+  if (requesterRole === 'admin' && target.role === 'super_admin') {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'Admins cannot modify Super Admin accounts'
+    );
+  }
+
+  // Prevent non-super-admins from assigning super_admin
+  if (newRole === 'super_admin' && requesterRole !== 'super_admin') {
+    throw new AppError(StatusCodes.FORBIDDEN, 'Insufficient permissions');
+  }
+
+  return prisma.user.update({
+    where: { id: targetId },
+    data: { role: newRole },
     select: userSelect,
   });
 };
@@ -179,7 +201,7 @@ export const userService = {
   getUserById,
   updateUserStatus,
   deleteUser,
-  createAdmin,
   updateAdmin,
+  updateUserRole,
   updateUser,
 };

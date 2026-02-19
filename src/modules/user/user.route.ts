@@ -7,10 +7,8 @@ import { userValidation } from './user.validation';
 
 const router = Router();
 
-// Any authenticated user — get own profile
 router.get('/me', checkAuth(...Object.values(UserRole)), userController.getMe);
 
-// Admin + Super Admin — list and view users
 router.get(
   '/',
   checkAuth(UserRole.admin, UserRole.super_admin),
@@ -23,7 +21,6 @@ router.get(
   userController.getUserById
 );
 
-// Admin + Super Admin — update user status
 router.patch(
   '/:id/status',
   checkAuth(UserRole.admin, UserRole.super_admin),
@@ -31,7 +28,6 @@ router.patch(
   userController.updateUserStatus
 );
 
-// Super Admin only — delete user
 router.delete(
   '/:id',
   checkAuth(UserRole.super_admin),
@@ -45,19 +41,20 @@ router.patch(
   userController.updateUser
 );
 
-// Super Admin only — manage admin accounts
-router.post(
-  '/admin',
-  checkAuth(UserRole.super_admin),
-  validateRequest(userValidation.createAdminSchema),
-  userController.createAdmin
-);
-
+// Super Admin only — update an existing admin's data
 router.patch(
   '/admin/:id',
   checkAuth(UserRole.super_admin),
   validateRequest(userValidation.updateAdminSchema),
   userController.updateAdmin
+);
+
+// Super Admin only — separate route to update user role
+router.patch(
+  '/:id/role',
+  checkAuth(UserRole.super_admin, UserRole.admin),
+  validateRequest(userValidation.updateRoleSchema),
+  userController.updateUserRole
 );
 
 export const userRoutes = router;

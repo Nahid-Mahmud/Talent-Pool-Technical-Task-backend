@@ -29,6 +29,9 @@ interface EnvVariables {
     SMTP_PORT: string;
     SMTP_FROM: string;
   };
+  SUPER_ADMIN_EMAIL: string;
+  SUPER_ADMIN_PASSWORD: string;
+  SUPER_ADMIN_NAME: string;
 }
 
 const loadEnvVariable = (): EnvVariables => {
@@ -52,6 +55,9 @@ const loadEnvVariable = (): EnvVariables => {
     'SMTP_HOST',
     'SMTP_PORT',
     'SMTP_FROM',
+    'SUPER_ADMIN_EMAIL',
+    'SUPER_ADMIN_PASSWORD',
+    'SUPER_ADMIN_NAME',
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -99,6 +105,9 @@ const loadEnvVariable = (): EnvVariables => {
       SMTP_PORT: process.env.SMTP_PORT as string,
       SMTP_FROM: process.env.SMTP_FROM as string,
     },
+    SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+    SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+    SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME as string,
   };
 };
 

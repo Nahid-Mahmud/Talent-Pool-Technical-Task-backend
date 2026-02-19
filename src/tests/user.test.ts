@@ -168,32 +168,8 @@ describe('User Routes', () => {
     });
   });
 
-  describe('POST /api/v1/users/admin', () => {
-    it('should create an admin as super admin', async () => {
-      const res = await request(app)
-        .post('/api/v1/users/admin')
-        .set('Cookie', superAdminCookie)
-        .send({
-          email: 'newadmin@example.com',
-          password: 'Password123!',
-          name: 'New Admin',
-        })
-        .expect(201);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data.role).toBe('admin');
-    });
-    it('should not allow duplicate admin email', async () => {
-      await request(app)
-        .post('/api/v1/users/admin')
-        .set('Cookie', superAdminCookie)
-        .send({
-          email: admin.email,
-          password: 'Password123!',
-          name: 'Dup Admin',
-        })
-        .expect(409);
-    });
-  });
+  // Creating users is handled via `POST /api/v1/auth/register` now — user-creation
+  // through the `/users` resource was removed. Covered by `auth` tests.
 
   describe('PATCH /api/v1/users/admin/:id', () => {
     it('should update admin as super admin', async () => {
@@ -211,6 +187,44 @@ describe('User Routes', () => {
         .set('Cookie', superAdminCookie)
         .send({ name: 'Should Fail' })
         .expect(404);
+    });
+  });
+
+  describe('PATCH /api/v1/users/:id/role', () => {
+    it('should let super admin change a student to admin', async () => {
+      const res = await request(app)
+        .patch(`/api/v1/users/${student.id}/role`)
+        .set('Cookie', superAdminCookie)
+        .send({ role: 'admin' })
+        .expect(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.role).toBe('admin');
+    });
+
+    it('should let admin change a student to admin', async () => {
+      const tempUser = await prisma.user.create({
+        data: buildUser({
+          email: 'stu-admin-change@example.com',
+          role: 'student',
+        }),
+      });
+
+      const res = await request(app)
+        .patch(`/api/v1/users/${tempUser.id}/role`)
+        .set('Cookie', adminCookie)
+        .send({ role: 'admin' })
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.role).toBe('admin');
+    });
+
+    it('should prevent self role-change', async () => {
+      await request(app)
+        .patch(`/api/v1/users/${superAdmin.id}/role`)
+        .set('Cookie', superAdminCookie)
+        .send({ role: 'admin' })
+        .expect(400);
     });
   });
 

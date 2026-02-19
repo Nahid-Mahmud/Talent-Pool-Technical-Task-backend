@@ -6,11 +6,18 @@ const updateStatusSchema = z.object({
   }),
 });
 
-const createAdminSchema = z.object({
+const createUserSchema = z.object({
   body: z.object({
     email: z.string().email().toLowerCase(),
     password: z.string().min(6),
     name: z.string().optional(),
+    role: z.enum(['super_admin', 'admin', 'student']).optional(),
+  }),
+});
+
+const updateRoleSchema = z.object({
+  body: z.object({
+    role: z.enum(['super_admin', 'admin', 'student']),
   }),
 });
 
@@ -32,7 +39,8 @@ const updateUserSchema = z.object({
 
 export const userValidation = {
   updateStatusSchema,
-  createAdminSchema,
+  createUserSchema,
+  updateRoleSchema,
   updateAdminSchema,
   updateUserSchema,
 };
