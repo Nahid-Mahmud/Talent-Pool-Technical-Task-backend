@@ -48,7 +48,7 @@ model User {
   id        String     @id @default(uuid()) @db.Uuid
   email     String     @unique
   password  String
-  name      String?
+  name      String
   role      UserRole   @default(student)
   status    UserStatus @default(active)
   createdAt DateTime   @default(now())
