@@ -28,4 +28,35 @@ const update = z.object({
   }),
 });
 
-export const courseValidation = { create, update };
+// common param validator used for routes that include an :id segment
+const params = z.object({
+  params: z.object({
+    id: z.string().uuid('Invalid ID'),
+  }),
+});
+
+// query validation for listing/filtering courses
+const list = z.object({
+  query: z.object({
+    search: z.string().optional(),
+    categoryId: z.string().uuid('Invalid category ID').optional(),
+    category: z.string().optional(),
+    instructorId: z.string().uuid('Invalid instructor ID').optional(),
+    status: z.enum(CourseStatus).optional(),
+    isFree: z.preprocess((val) => {
+      if (val === undefined) return undefined;
+      if (typeof val === 'string') {
+        const lowered = val.toLowerCase();
+        if (lowered === 'true') return true;
+        if (lowered === 'false') return false;
+      }
+      return val;
+    }, z.boolean().optional()),
+    page: z.coerce.number().int().min(1).optional(),
+    limit: z.coerce.number().int().min(1).optional(),
+    sortBy: z.string().optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
+  }),
+});
+
+export const courseValidation = { create, update, params, list };

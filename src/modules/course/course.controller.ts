@@ -1,6 +1,7 @@
 import { catchAsync } from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { courseService } from './course.service';
+import { GetCoursesFilters } from './course.interface';
 
 const createCourse = catchAsync(async (req, res) => {
   const instructorId = req.user.id;
@@ -35,7 +36,89 @@ const updateCourse = catchAsync(async (req, res) => {
   });
 });
 
+// get single course
+
+const getSingleCourse = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const course = await courseService.getSingleCourse(id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course retrieved successfully',
+    data: course,
+  });
+});
+
+const getAllCourses = catchAsync(async (req, res) => {
+  // query params contain filtering / pagination options
+  const result = await courseService.getAllCourses(
+    req.query as GetCoursesFilters
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Courses retrieved successfully',
+    data: result.data,
+    meta: {
+      page: result.meta.page,
+      limit: result.meta.limit,
+      total: result.meta.total,
+      totalPages: result.meta.totalPages,
+    },
+  });
+});
+
+const deleteCourse = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await courseService.deleteCourse(id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course deleted successfully',
+    data: null,
+  });
+});
+
+const getCourseDetailsForStudent = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const courseDetails = await courseService.getCourseDetailsForStudent(
+    id as string,
+    userId
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course details retrieved successfully',
+    data: courseDetails,
+  });
+});
+
+const getCourseDetailsForInstructor = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const courseDetails = await courseService.getCourseDetailsForInstructor(
+    id as string,
+    userId
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course details retrieved successfully',
+    data: courseDetails,
+  });
+});
+
 export const courseController = {
   createCourse,
   updateCourse,
+  getAllCourses,
+  getSingleCourse,
+  deleteCourse,
+  getCourseDetailsForStudent,
+  getCourseDetailsForInstructor,
 };
