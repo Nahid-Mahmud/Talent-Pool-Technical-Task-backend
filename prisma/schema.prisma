@@ -45,7 +45,7 @@ enum PaymentStatus {
 }
 
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
+  id        String     @id @default(uuid()) @db.Uuid 
   email     String     @unique
   password  String
   name      String
@@ -124,6 +124,22 @@ model Lesson {
   @@index([order])
 }
 
+model LessonProgress {
+  id          String    @id @default(uuid()) @db.Uuid
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  enrollmentId String     @db.Uuid
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId     String     @db.Uuid
+
+  @@unique([enrollmentId, lessonId])
+  @@index([enrollmentId])
+  @@index([lessonId])
+}
+
 model Enrollment {
   id        String           @id @default(uuid()) @db.Uuid
   status    EnrollmentStatus @default(active)
@@ -141,22 +157,6 @@ model Enrollment {
   @@index([studentId])
   @@index([courseId])
   @@index([status])
-}
-
-model LessonProgress {
-  id          String    @id @default(uuid()) @db.Uuid
-  isCompleted Boolean   @default(false)
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
-
-  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  enrollmentId String     @db.Uuid
-  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  lessonId     String     @db.Uuid
-
-  @@unique([enrollmentId, lessonId])
-  @@index([enrollmentId])
-  @@index([lessonId])
 }
 
 model Payment {
