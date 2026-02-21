@@ -32,6 +32,10 @@ interface EnvVariables {
   SUPER_ADMIN_EMAIL: string;
   SUPER_ADMIN_PASSWORD: string;
   SUPER_ADMIN_NAME: string;
+  STRIPE: {
+    STRIPE_SECRET: string;
+    STRIPE_PUBLISHABLE_KEY: string;
+  };
 }
 
 const loadEnvVariable = (): EnvVariables => {
@@ -58,6 +62,8 @@ const loadEnvVariable = (): EnvVariables => {
     'SUPER_ADMIN_EMAIL',
     'SUPER_ADMIN_PASSWORD',
     'SUPER_ADMIN_NAME',
+    'STRIPE_SECRET',
+    'STRIPE_PUBLISHABLE_KEY',
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -108,6 +114,10 @@ const loadEnvVariable = (): EnvVariables => {
     SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
     SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
     SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME as string,
+    STRIPE: {
+      STRIPE_SECRET: process.env.STRIPE_SECRET as string,
+      STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY as string,
+    },
   };
 };
 
