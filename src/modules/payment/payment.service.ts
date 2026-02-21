@@ -14,10 +14,6 @@ const createCheckoutSession = async (userId: string, courseId: string) => {
     throw new AppError(StatusCodes.NOT_FOUND, 'Course not found');
   }
 
-  if (course.isFree) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Course is free');
-  }
-
   // Check if already enrolled
   const existingEnrollment = await prisma.enrollment.findUnique({
     where: {
@@ -33,6 +29,22 @@ const createCheckoutSession = async (userId: string, courseId: string) => {
       StatusCodes.BAD_REQUEST,
       'You are already enrolled in this course'
     );
+  }
+
+  // If course is free, enroll directly
+  if (course.isFree) {
+    const enrollment = await prisma.enrollment.create({
+      data: {
+        studentId: userId,
+        courseId: courseId,
+      },
+    });
+
+    return {
+      enrolled: true,
+      message: 'Successfully enrolled in free course',
+      enrollment,
+    };
   }
 
   const session = await stripe.checkout.sessions.create({
@@ -63,6 +75,7 @@ const createCheckoutSession = async (userId: string, courseId: string) => {
 
   return {
     url: session.url,
+    message: 'Checkout session created successfully',
   };
 };
 
