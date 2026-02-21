@@ -6,6 +6,7 @@ import categoryRoutes from '../modules/category/category.route';
 import courseRoutes from '../modules/course/course.route';
 import { lessonRoutes } from '../modules/lesson/lesson.route';
 import { lessonProgressRoutes } from '../modules/lessonProgress/lessonProgress.route';
+import { paymentRoutes } from '../modules/payment/payment.route';
 
 export const router: Router = Router();
 
@@ -21,6 +22,7 @@ const moduleRoutes: IModuleRoute[] = [
   { path: '/courses', route: courseRoutes },
   { path: '/lessons', route: lessonRoutes },
   { path: '/lesson-progress', route: lessonProgressRoutes },
+  { path: '/payments', route: paymentRoutes },
 ];
 
 moduleRoutes.forEach((route) => {
